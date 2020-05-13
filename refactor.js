@@ -22,26 +22,30 @@ function statement(invoice, plays) {
 	return result;
 }
 
-function getAmount(play, perf) {
-	let thisAmount = 0;
+function getAmount(play, aPerformance) {
+	let amount = 0;
+
 	switch (play.type) {
 		case "tragedy":
-			thisAmount = 40000;
-			if (perf.audience > 30) {
-				thisAmount += 1000 * (perf.audience - 30);
+			amount = 40000;
+			if (aPerformance.audience > 30) {
+				amount += 1000 * (aPerformance.audience - 30);
 			}
 			break;
+
 		case "comedy":
-			thisAmount = 30000;
-			if (perf.audience > 20) {
-				thisAmount += 10000 + 500 * (perf.audience - 20);
+			amount = 30000;
+			if (aPerformance.audience > 20) {
+				aomunt += 10000 + 500 * (aPerformance.audience - 20);
 			}
-			thisAmount += 300 * perf.audience;
+			amount += 300 * aPerformance.audience;
 			break;
+
 		default:
 			throw new Error(`unknown type: ${play.type}`);
 	}
-	return thisAmount;
+
+	return amount;
 }
 
 function readJsonFileAndDeserialize(jsonFile) {
