@@ -2,18 +2,23 @@ function statement(invoice, plays) {
 	const statementData = {};
 	statementData.customer = invoice.customer;
 	statementData.performances = invoice.performances.map(enrichPerformance);
-	return renderPlainText(invoice, plays);
+	return renderPlainText(statementData);
+
+	function enrichPerformance(aPerformance) {
+		const result = Object.assign({}, aPerformance);
+		result.play = playFor(result);
+		return result;
+	}
+
+	function playFor(aPerformance) {
+		return plays[aPerformance.playID];
+	}
 }
 
-function enrichPerformance(aPerformance) {
-	const result = Object.assign({}, aPerformance);
-	return result;
-}
-
-function renderPlainText(data, plays) {
+function renderPlainText(data) {
 	let result = `Statement for ${data.customer}\n`;
 	for (let perf of data.performances) {
-		result += ` ${playFor(perf).name}: ${usd(getAmount(perf) / 100)} (${perf.audience} seats)\n`;
+		result += ` ${perf.play.name}: ${usd(getAmount(perf) / 100)} (${perf.audience} seats)\n`;
 	}
 	result += `Amount owed is ${usd(totalAmount() / 100)}\n`;
 	result += `You earned ${totalVolumnCredits()} credits\n`;
@@ -45,18 +50,14 @@ function renderPlainText(data, plays) {
 	function volumnCreditsFor(aPerformance) {
 		let volumnCredits = 0;
 		volumnCredits += Math.max(aPerformance.audience - 30, 0);
-		if ("comedy" === playFor(aPerformance).type)
+		if ("comedy" === aPerformance.play.type)
 			volumnCredits += Math.floor(aPerformance.audience / 5);
 		return volumnCredits;
 	}
 
-	function playFor(aPerformance) {
-		return plays[aPerformance.playID];
-	}
-
 	function getAmount(aPerformance) {
 		let amount = 0;
-		switch (playFor(aPerformance).type) {
+		switch (aPerformance.play.type) {
 			case "tragedy":
 				amount = 40000;
 				if (aPerformance.audience > 30) {
@@ -71,7 +72,7 @@ function renderPlainText(data, plays) {
 				amount += 300 * aPerformance.audience;
 				break;
 			default:
-				throw new Error(`unknown type: ${playFor(aPerformance).type}`);
+				throw new Error(`unknown type: ${aPerformance.play.type}`);
 		}
 		return amount;
 	}
