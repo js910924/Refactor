@@ -5,47 +5,50 @@ function statement(invoice, plays) {
 	const format = new Intl.NumberFormat("en-US",
 		{ style: "currency", currency:"USD",
 			minimunFractionDigits:2 }).format;
-	
+
 	for (let perf of invoice.performances) {
-		const play = plays[perf.playID];
-		let thisAmount = getAmount(play, perf);
+		let thisAmount = getAmount(playFor(perf), perf);
 
 		volumnCredits += Math.max(perf.audience - 30, 0);
 
-		if ("comedy" === play.type) volumnCredits + Math.floor(perf.audience / 5);
+		if ("comedy" === playFor(perf).type) volumnCredits + Math.floor(perf.audience / 5);
 
-		result += ` ${play.name}: ${format(thisAmount/100)} (${perf.audience} seats)\n`;
+		result += ` ${playFor(perf).name}: ${format(thisAmount/100)} (${perf.audience} seats)\n`;
 		totalAmount += thisAmount;
 	}
 	result += `Amount owed is ${format(totalAmount/100)}\n`;
 	result += `You earned ${volumnCredits} credits\n`;
 	return result;
-}
 
-function getAmount(play, aPerformance) {
-	let amount = 0;
-
-	switch (play.type) {
-		case "tragedy":
-			amount = 40000;
-			if (aPerformance.audience > 30) {
-				amount += 1000 * (aPerformance.audience - 30);
-			}
-			break;
-
-		case "comedy":
-			amount = 30000;
-			if (aPerformance.audience > 20) {
-				amount += 10000 + 500 * (aPerformance.audience - 20);
-			}
-			amount += 300 * aPerformance.audience;
-			break;
-
-		default:
-			throw new Error(`unknown type: ${play.type}`);
+	function playFor(aPerformance) {
+		return plays[aPerformance.playID];
 	}
 
-	return amount;
+	function getAmount(play, aPerformance) {
+		let amount = 0;
+
+		switch (play.type) {
+			case "tragedy":
+				amount = 40000;
+				if (aPerformance.audience > 30) {
+					amount += 1000 * (aPerformance.audience - 30);
+				}
+				break;
+
+			case "comedy":
+				amount = 30000;
+				if (aPerformance.audience > 20) {
+					amount += 10000 + 500 * (aPerformance.audience - 20);
+				}
+				amount += 300 * aPerformance.audience;
+				break;
+
+			default:
+				throw new Error(`unknown type: ${play.type}`);
+		}
+
+		return amount;
+	}
 }
 
 function readJsonFileAndDeserialize(jsonFile) {
