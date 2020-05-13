@@ -7,18 +7,41 @@ function statement(invoice, plays) {
 	function enrichPerformance(aPerformance) {
 		const result = Object.assign({}, aPerformance);
 		result.play = playFor(result);
+		result.amount = getAmount(result);
 		return result;
 	}
 
 	function playFor(aPerformance) {
 		return plays[aPerformance.playID];
 	}
+
+	function getAmount(aPerformance) {
+		let amount = 0;
+		switch (aPerformance.play.type) {
+			case "tragedy":
+				amount = 40000;
+				if (aPerformance.audience > 30) {
+					amount += 1000 * (aPerformance.audience - 30);
+				}
+				break;
+			case "comedy":
+				amount = 30000;
+				if (aPerformance.audience > 20) {
+					amount += 10000 + 500 * (aPerformance.audience - 20);
+				}
+				amount += 300 * aPerformance.audience;
+				break;
+			default:
+				throw new Error(`unknown type: ${aPerformance.play.type}`);
+		}
+		return amount;
+	}
 }
 
 function renderPlainText(data) {
 	let result = `Statement for ${data.customer}\n`;
 	for (let perf of data.performances) {
-		result += ` ${perf.play.name}: ${usd(getAmount(perf) / 100)} (${perf.audience} seats)\n`;
+		result += ` ${perf.play.name}: ${usd(perf.amount / 100)} (${perf.audience} seats)\n`;
 	}
 	result += `Amount owed is ${usd(totalAmount() / 100)}\n`;
 	result += `You earned ${totalVolumnCredits()} credits\n`;
@@ -27,7 +50,7 @@ function renderPlainText(data) {
 	function totalAmount() {
 		let totalAmount = 0;
 		for (let perf of data.performances) {
-			totalAmount += getAmount(perf);
+			totalAmount += perf.amount;
 		}
 		return totalAmount;
 	}
@@ -53,28 +76,6 @@ function renderPlainText(data) {
 		if ("comedy" === aPerformance.play.type)
 			volumnCredits += Math.floor(aPerformance.audience / 5);
 		return volumnCredits;
-	}
-
-	function getAmount(aPerformance) {
-		let amount = 0;
-		switch (aPerformance.play.type) {
-			case "tragedy":
-				amount = 40000;
-				if (aPerformance.audience > 30) {
-					amount += 1000 * (aPerformance.audience - 30);
-				}
-				break;
-			case "comedy":
-				amount = 30000;
-				if (aPerformance.audience > 20) {
-					amount += 10000 + 500 * (aPerformance.audience - 20);
-				}
-				amount += 300 * aPerformance.audience;
-				break;
-			default:
-				throw new Error(`unknown type: ${aPerformance.play.type}`);
-		}
-		return amount;
 	}
 }
 
