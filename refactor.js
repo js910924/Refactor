@@ -36,7 +36,7 @@ function getAmount(play, aPerformance) {
 		case "comedy":
 			amount = 30000;
 			if (aPerformance.audience > 20) {
-				aomunt += 10000 + 500 * (aPerformance.audience - 20);
+				amount += 10000 + 500 * (aPerformance.audience - 20);
 			}
 			amount += 300 * aPerformance.audience;
 			break;
