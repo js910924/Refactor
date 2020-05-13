@@ -2,6 +2,8 @@ function statement(invoice, plays) {
 	const statementData = {};
 	statementData.customer = invoice.customer;
 	statementData.performances = invoice.performances.map(enrichPerformance);
+	statementData.totalAmount = totalAmount(statementData);
+	statementData.totalVolumnCredits = totalVolumnCredits(statementData);
 	return renderPlainText(statementData);
 
 	function enrichPerformance(aPerformance) {
@@ -45,18 +47,8 @@ function statement(invoice, plays) {
 			volumnCredits += Math.floor(aPerformance.audience / 5);
 		return volumnCredits;
 	}
-}
 
-function renderPlainText(data) {
-	let result = `Statement for ${data.customer}\n`;
-	for (let perf of data.performances) {
-		result += ` ${perf.play.name}: ${usd(perf.amount / 100)} (${perf.audience} seats)\n`;
-	}
-	result += `Amount owed is ${usd(totalAmount() / 100)}\n`;
-	result += `You earned ${totalVolumnCredits()} credits\n`;
-	return result;
-
-	function totalAmount() {
+	function totalAmount(data) {
 		let totalAmount = 0;
 		for (let perf of data.performances) {
 			totalAmount += perf.amount;
@@ -64,13 +56,23 @@ function renderPlainText(data) {
 		return totalAmount;
 	}
 
-	function totalVolumnCredits() {
+	function totalVolumnCredits(data) {
 		let volumnCredits = 0;
 		for (let perf of data.performances) {
 			volumnCredits += perf.volumnCredits;
 		}
 		return volumnCredits;
 	}
+}
+
+function renderPlainText(data) {
+	let result = `Statement for ${data.customer}\n`;
+	for (let perf of data.performances) {
+		result += ` ${perf.play.name}: ${usd(perf.amount / 100)} (${perf.audience} seats)\n`;
+	}
+	result += `Amount owed is ${usd(data.totalAmount / 100)}\n`;
+	result += `You earned ${data.totalVolumnCredits} credits\n`;
+	return result;
 
 	function usd(aNumber) {
 		return new Intl.NumberFormat("en-US", {
