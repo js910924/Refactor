@@ -1,8 +1,3 @@
-let fs = require('fs');
-
-let plays = JSON.parse(fs.readFileSync('plays.json', 'utf8'));
-let invoice = JSON.parse(fs.readFileSync('invoices.json', 'utf8'));
-
 function statement(invoice, plays) {
 	let totalAmount = 0;
 	let volumnCredits = 0;
@@ -14,7 +9,6 @@ function statement(invoice, plays) {
 	for (let perf of invoice.performances) {
 		const play = plays[perf.playID];
 		let thisAmount = 0;
-		
 		switch (play.type) {
 			case "tragedy":
 				thisAmount = 40000;
@@ -45,6 +39,17 @@ function statement(invoice, plays) {
 	return result;
 }
 
-let expected = "Statement for BigCo\n Hamlet: $650.00 (55 seats)\n As You Like It: $580.00 (35 seats)\n Othello: $500.00 (40 seats)\nAmount owed is $1,730.00\nYou earned 40 credits\n";
+function readJsonFileAndDeserialize(jsonFile) {
+	let fs = require('fs');
+	return JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
+}
 
-console.log(statement(invoice, plays) === expected);
+function should_get_corresponding_result_when_call_statement() {
+	let invoice = readJsonFileAndDeserialize('invoices.json');
+	let plays = readJsonFileAndDeserialize('plays.json');
+
+	let expected = "Statement for BigCo\n Hamlet: $650.00 (55 seats)\n As You Like It: $580.00 (35 seats)\n Othello: $500.00 (40 seats)\nAmount owed is $1,730.00\nYou earned 40 credits\n";
+	console.log(statement(invoice, plays) === expected);
+}
+
+should_get_corresponding_result_when_call_statement();
