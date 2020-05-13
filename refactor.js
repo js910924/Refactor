@@ -9,7 +9,7 @@ function statement(invoice, plays) {
 	for (let perf of invoice.performances) {
 		volumnCredits += Math.max(perf.audience - 30, 0);
 
-		if ("comedy" === playFor(perf).type) volumnCredits + Math.floor(perf.audience / 5);
+		if ("comedy" === playFor(perf).type) volumnCredits += Math.floor(perf.audience / 5);
 
 		result += ` ${playFor(perf).name}: ${format(getAmount(perf)/100)} (${perf.audience} seats)\n`;
 		totalAmount += getAmount(perf);
@@ -58,7 +58,7 @@ function should_get_corresponding_result_when_call_statement() {
 	let invoice = readJsonFileAndDeserialize('invoices.json');
 	let plays = readJsonFileAndDeserialize('plays.json');
 
-	let expected = "Statement for BigCo\n Hamlet: $650.00 (55 seats)\n As You Like It: $580.00 (35 seats)\n Othello: $500.00 (40 seats)\nAmount owed is $1,730.00\nYou earned 40 credits\n";
+	let expected = "Statement for BigCo\n Hamlet: $650.00 (55 seats)\n As You Like It: $580.00 (35 seats)\n Othello: $500.00 (40 seats)\nAmount owed is $1,730.00\nYou earned 47 credits\n";
 	console.log(statement(invoice, plays) === expected);
 }
 
