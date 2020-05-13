@@ -71,7 +71,14 @@ function should_get_corresponding_result_when_call_statement() {
 	let plays = readJsonFileAndDeserialize('plays.json');
 
 	let expected = "Statement for BigCo\n Hamlet: $650.00 (55 seats)\n As You Like It: $580.00 (35 seats)\n Othello: $500.00 (40 seats)\nAmount owed is $1,730.00\nYou earned 47 credits\n";
-	console.log(statement(invoice, plays) === expected);
+	if (statement(invoice, plays) === expected) {
+		console.log("Good Job!");
+	} else {
+		console.log("[Result]");
+		console.log(statement(invoice, plays));
+		console.log("[Expected]");
+		console.log(expected);
+	}
 }
 
 should_get_corresponding_result_when_call_statement();
