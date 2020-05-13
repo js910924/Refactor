@@ -8,6 +8,7 @@ function statement(invoice, plays) {
 		const result = Object.assign({}, aPerformance);
 		result.play = playFor(result);
 		result.amount = getAmount(result);
+		result.volumnCredits = volumnCreditsFor(result);
 		return result;
 	}
 
@@ -36,6 +37,14 @@ function statement(invoice, plays) {
 		}
 		return amount;
 	}
+
+	function volumnCreditsFor(aPerformance) {
+		let volumnCredits = 0;
+		volumnCredits += Math.max(aPerformance.audience - 30, 0);
+		if ("comedy" === aPerformance.play.type)
+			volumnCredits += Math.floor(aPerformance.audience / 5);
+		return volumnCredits;
+	}
 }
 
 function renderPlainText(data) {
@@ -58,7 +67,7 @@ function renderPlainText(data) {
 	function totalVolumnCredits() {
 		let volumnCredits = 0;
 		for (let perf of data.performances) {
-			volumnCredits += volumnCreditsFor(perf);
+			volumnCredits += perf.volumnCredits;
 		}
 		return volumnCredits;
 	}
@@ -68,14 +77,6 @@ function renderPlainText(data) {
 			style: "currency", currency: "USD",
 			minimunFractionDigits: 2
 		}).format(aNumber);
-	}
-
-	function volumnCreditsFor(aPerformance) {
-		let volumnCredits = 0;
-		volumnCredits += Math.max(aPerformance.audience - 30, 0);
-		if ("comedy" === aPerformance.play.type)
-			volumnCredits += Math.floor(aPerformance.audience / 5);
-		return volumnCredits;
 	}
 }
 
